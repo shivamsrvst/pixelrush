@@ -7,11 +7,13 @@ import { COLORS } from "../constants"
 import { AntDesign,MaterialCommunityIcons,SimpleLineIcons } from "@expo/vector-icons"
 import { ScrollView } from "react-native-gesture-handler"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-
+import { resetCart } from "../context/actions/cartActions"
+import { useDispatch } from "react-redux"
 
 const Profile = ({navigation}) => {
   const [userData, setUserData] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
+  const dispatch=useDispatch();
   
   useEffect(()=>{
     checkExistingUser();
@@ -45,6 +47,7 @@ const Profile = ({navigation}) => {
     const userId=`user${JSON.parse(id)}`;
     try {
       await AsyncStorage.multiRemove([userId,'id']);
+      dispatch(resetCart());
       navigation.replace('Bottom Navigation')
       
 

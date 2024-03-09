@@ -38,7 +38,11 @@ const styles=StyleSheet.create({
        fontSize:10,
        color:COLORS.lightWhite
 
-    }
+    },
+    loadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
 
 })
 

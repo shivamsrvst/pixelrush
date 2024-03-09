@@ -1,8 +1,8 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, TouchableOpacity,TextInput } from 'react-native'
 import React from 'react'
 import styles from "./welcome.style"
 import { COLORS,SIZES } from "../../constants"
-import { TextInput, TouchableOpacity } from "react-native-gesture-handler"
+// import { TextInput,  } from "react-native-gesture-handler"
 import { Feather, Ionicons, } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
 
@@ -31,9 +31,9 @@ const Welcome = () => {
       </View>
 
       <View style={styles.searchContainer}>
-        <Pressable>
+        <TouchableOpacity>
           <Feather name="search" size={24} style={styles.searchIcon} />
-        </Pressable>
+        </TouchableOpacity>
 
         <View style={styles.searchWrapper}>
 
@@ -48,7 +48,7 @@ const Welcome = () => {
         </View>
 
         <View>
-          <Pressable
+          <TouchableOpacity
           style={styles.searchBtn}
           onPress={()=>{}}
           >
@@ -58,7 +58,7 @@ const Welcome = () => {
             color={COLORS.offwhite}
             />
 
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
 

@@ -1,0 +1,212 @@
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState, useMemo } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import styles from "./cart.style";
+import { COLORS, SIZES } from "../constants/theme";
+import { Ionicons } from "@expo/vector-icons";
+import fetchCart from "../hook/fetchCart";
+import { Button, CartCard } from "../components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import { ScrollView } from "react-native-gesture-handler";
+
+const Cart = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { items, loading, error } = useSelector((state) => state.cart);
+  const [selected, setSelected] = useState(null);
+  const [select, setSelect] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponCodeEntered, setCouponCodeEntered] = useState("");
+  const [discount, setDiscount] = useState(0);
+  // const cartItems = useSelector((state) => state.cart.items);
+
+  // console.log(cartItems);
+  // console.log(items);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+  // useEffect(() => {
+  //   // Refetch cart data when cart items change
+  //   if (isLoggedIn) {
+  //     // refetch();
+  //     console.log("refetch called");
+  //   }else{
+  //     return
+  //   }
+  // }, [cartItems]);
+  useEffect(() => {
+    dispatch(fetchCart()); // Dispatch to fetch data on component mount
+  }, [dispatch]);
+
+  const checkUser = async () => {
+    try {
+      const id = await AsyncStorage.getItem("id");
+      if (id !== null) {
+        setIsLoggedIn(true);
+      } else {
+        // User not logged in
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+  const applyDiscount = () => {
+    // Assuming 'EXAMPLECODE' is the coupon code for a discount
+    const exampleCouponCode = "GAME20";
+
+    if (couponCodeEntered === exampleCouponCode) {
+      // Calculate the discount based on your logic
+      const discountPercentage = 20; // 10% discount for 'EXAMPLECODE'
+      const appliedDiscount =
+        (discountPercentage / 100) * calculateTotalAmount().totalAmount;
+
+      // Update the discount state
+      setDiscount(appliedDiscount);
+    } else {
+      console.log("INVALID COUPON CODE");
+      // Reset the discount state
+      setDiscount(0);
+    }
+  };
+
+  const calculateTotalAmount = () => {
+    let totalAmount = 0;
+    let totalItems = 0;
+
+    if (items) {
+      totalAmount = items.reduce(
+        (accumulator, item) =>
+          accumulator + item.quantity * item?.cartItem?.price,
+        0
+      );
+
+      totalItems = items.reduce(
+        (accumulator, item) => accumulator + item.quantity,
+        0
+      );
+    }
+
+    const shippingCost = totalItems > 3 ? 10 : 5;
+
+    const appliedDiscount = discount;
+
+    const finalTotal = totalAmount + shippingCost - appliedDiscount;
+
+    return {
+      totalAmount,
+      shippingCost,
+      discount: appliedDiscount,
+      finalTotal,
+    };
+  };
+
+  const renderContent = () => {
+    if (loading) {
+      return <ActivityIndicator />;
+    } else if (!items || items.length === 0) {
+      return (
+        <View style={styles.emptyCartContainer}>
+          <Text style={styles.emptyCartText}>Oops..!! Your Cart Is Empty</Text>
+        </View>
+      );
+    } else if (isLoggedIn) {
+      console.log("items:", items);
+      const pricingDetails = calculateTotalAmount();
+      return (
+        <View>
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item?.productId}
+            ListFooterComponent={
+              <>
+                <View style={styles.couponSectionContainer}>
+                  <View style={styles.couponSection}>
+                    <TextInput
+                      style={styles.couponInput}
+                      placeholder="Enter Coupon Code"
+                      value={couponCodeEntered}
+                      onChangeText={(text) => setCouponCodeEntered(text)}
+                    />
+                    <TouchableOpacity
+                      style={styles.applyButton}
+                      onPress={applyDiscount}
+                    >
+                      <Text style={styles.applyButtonText}>Apply</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View style={styles.pricingDetails}>
+                  <Text>
+                    Total Amount: ${pricingDetails.totalAmount.toFixed(2)}
+                  </Text>
+                  <Text>
+                    Shipping Cost: ${pricingDetails.shippingCost.toFixed(2)}
+                  </Text>
+                  <Text>Discount: ${pricingDetails.discount.toFixed(2)}</Text>
+                  <Text style={styles.totalText}>
+                    Total: ${pricingDetails.finalTotal.toFixed(2)}
+                  </Text>
+                </View>
+                {items.length > 0 && (
+                  <Button
+                    title={"Checkout"}
+                    onPress={() => {}}
+                    loader={false}
+                  />
+                )}
+              </>
+            }
+            renderItem={({ item }) => {
+              console.log("item:", item); // Log each 'item' individually
+              return <CartCard item={item} />;
+            }}
+          />
+        </View>
+      );
+    } else {
+      // User is not logged in
+      return (
+        <View>
+          <Text>Please Log In to view your cart.</Text>
+          <Button
+            loader={false}
+            title="Log In"
+            onPress={() => {
+              // Navigate to your Login Screen
+              navigation.navigate("Login");
+            }}
+          />
+        </View>
+      );
+    }
+  };
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.titleRow}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons
+            name="chevron-back-circle"
+            size={30}
+            color={COLORS.primary}
+          />
+        </TouchableOpacity>
+        <Text style={styles.titletxt}>Cart</Text>
+      </View>
+      {renderContent()}
+    </SafeAreaView>
+  );
+};
+
+export default Cart;

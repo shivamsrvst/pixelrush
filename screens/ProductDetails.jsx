@@ -18,20 +18,22 @@ import {
 import { COLORS, SIZES } from "../constants";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import addToCart from "../hook/addToCart";
+import AddToCart from "../hook/AddToCart";
 import WebView from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 
-
-
-const ProductDetails = ({ navigation }) => {
+const ProductDetails = ({ navigation, }) => {
   const [count, setCount] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [favorites, setFavorites] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState(false);
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   const route = useRoute();
-  const { item, isUpcoming } = route.params;
+  const { item, isUpcoming} = route.params;
+
 
   const increment = () => {
     setCount(count + 1);
@@ -98,11 +100,32 @@ const ProductDetails = ({ navigation }) => {
       addToFavorites();
     }
   };
-  const handleCart = () => {
-    if (isLoggedIn === false) {
-      navigation.navigate("Login");
-    } else {
-      addToCart(item._id, count);
+  const handleAddToCart = async () => {
+    try {
+      // Check if the user is logged in
+      if (!isLoggedIn) {
+        // If not logged in, navigate to the login page
+        navigation.navigate("Login");
+        return;
+      }
+
+      // Check if the item is already in the cart
+      const isInCart = cartItems.some(
+        (cartItem) => cartItem.productId === item._id
+      );
+
+      // If not in cart, add to cart
+      if (!isInCart) {
+        await AddToCart(item._id, count, dispatch);
+        // Show a success toast message
+        // You can also update the UI to change the icon here
+      } else {
+        // Item is already in the cart
+        console.log("Item is already in the cart");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error.message);
+      // Show an error toast message
     }
   };
   const handleBuy = () => {
@@ -146,7 +169,7 @@ const ProductDetails = ({ navigation }) => {
   const checkFavorites = async () => {
     const id = await AsyncStorage.getItem("id");
     const favoritesId = `favorites${JSON.parse(id)}`;
-    console.log(favoritesId);
+    // console.log(favoritesId);
     try {
       const favoritesObj = await AsyncStorage.getItem(favoritesId);
       if (favoritesObj !== null) {
@@ -177,6 +200,7 @@ const ProductDetails = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Ionicons name="chevron-back-circle" size={30} />
             </TouchableOpacity>
+            
 
             {!item.labels.includes("Upcoming") && (
               <TouchableOpacity onPress={() => handlePress()}>
@@ -301,14 +325,36 @@ const ProductDetails = ({ navigation }) => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => handleCart()}
-                  style={styles.addCart}
+                  onPress={() => handleAddToCart()}
+                  style={[styles.cartBtn, { marginRight: 12 }]}
                 >
-                  <Fontisto
-                    name="shopping-bag"
-                    size={22}
-                    color={COLORS.lightWhite}
-                  />
+                  {/* Change the Text based on whether the item is in the cart */}
+                  {cartItems.some(
+                    (cartItem) => cartItem.productId === item._id
+                  ) ? (
+                    <Text
+                      style={{
+                        fontFamily: "bold",
+                        fontSize: SIZES.medium,
+                        color: COLORS.lightWhite,
+                        marginLeft: SIZES.small,
+                      }}
+                      onPress={()=>navigation.navigate('Cart')}
+                    >
+                      GO TO CART
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        fontFamily: "bold",
+                        fontSize: SIZES.medium,
+                        color: COLORS.lightWhite,
+                        marginLeft: SIZES.small,
+                      }}
+                    >
+                      ADD TO CART
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             )}

@@ -1,15 +1,61 @@
 import { View, Text, Image, TouchableOpacity, Linking} from 'react-native'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styles  from "./productCardView.style"
-import { Ionicons,Fontisto } from "@expo/vector-icons"
+import { Ionicons,Fontisto,AntDesign,FontAwesome } from "@expo/vector-icons"
 import { COLORS, SIZES } from "../../constants"
 import { useNavigation } from "@react-navigation/native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from "../../context/actions/cartActions"
+import AddToCart from "../../hook/AddToCart"
 
 
 const ProductCardView = ({item,isUpcoming}) => {
-
   const navigation=useNavigation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch=useDispatch();
+  const cartItems = useSelector(state => state.cart.items)
+  useEffect(() => {
+    checkUser();
+  }, []);
 
+  const checkUser = async () => {
+    try {
+      const id = await AsyncStorage.getItem("id");
+      if (id !== null) {
+        setIsLoggedIn(true);
+      } else {
+        console.log("User not logged in");
+      }
+    } catch (error) {}
+  };
+  const handleAddToCart = async () => {
+    try {
+      // Check if the user is logged in
+      if (!isLoggedIn) {
+        // If not logged in, navigate to the login page
+        navigation.navigate('Login');
+        return;
+      }
+  
+      // Check if the item is already in the cart
+      const isInCart = cartItems.some((cartItem) => cartItem.productId === item._id);
+      if (!isInCart) {
+        await AddToCart(item._id, 1,dispatch);
+        // Show a success toast message
+        // You can also update the UI to change the icon here
+        
+      } else {
+        // Item is already in the cart
+        console.log('Item is already in the cart');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error.message);
+      // Show an error toast message
+
+    }
+  };
+  
 
   return (
     <TouchableOpacity
@@ -36,6 +82,7 @@ const ProductCardView = ({item,isUpcoming}) => {
             <Text style={styles.price} numberOfLines={1}>
               See Details
             </Text>
+            
           ) : (
             <Text style={styles.price} numberOfLines={1}>
               ${item.price}
@@ -43,16 +90,15 @@ const ProductCardView = ({item,isUpcoming}) => {
           )}
         </View>
 
-        {isUpcoming ? (
+        {!isUpcoming && (
           <View style={styles.addBtn}>
-            <TouchableOpacity onPress={()=>Linking.openURL(item.upcomingUrl)}>
-              <Ionicons name="globe" size={30} color={COLORS.primary} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.addBtn}>
-            <TouchableOpacity>
-              <Ionicons name="add-circle" size={35} color={COLORS.primary} />
+            <TouchableOpacity onPress={handleAddToCart}>
+              {/* Change the icon based on whether the item is in the cart */}
+              {cartItems.some((cartItem) => cartItem.productId === item._id) ? (
+                <FontAwesome name="check-circle" size={35} color={COLORS.primary} />
+              ) : (
+                <Ionicons name="add-circle" size={35} color={COLORS.primary} />
+              )}
             </TouchableOpacity>
           </View>
         )}

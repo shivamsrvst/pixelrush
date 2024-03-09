@@ -55,14 +55,14 @@ const styles=StyleSheet.create({
     },
 
     cartBtn:{
-        width:SIZES.width*0.7,
+        width:SIZES.width*0.4,
         backgroundColor:COLORS.black,
         padding:SIZES.small/2,
         borderRadius:SIZES.large,
         marginLeft:12
     },
     addCart:{
-        width:37,
+        width:67,
         height:37,
         borderRadius:50,
         margin:SIZES.small,

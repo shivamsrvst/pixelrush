@@ -9,7 +9,6 @@ import DecrementCartItem from "../../hook/DecrementCartItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteCartItem from "../../hook/DeleteCartItem";
-import { decrementCartItem, deleteCartItem } from "../../context/actions/cartActions";
 
 
 
@@ -17,19 +16,21 @@ const CartCard = ({ item, onPress, select }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart.items);
-  // console.log(item);
-  console.log(cartItems);
+  console.log(item);
+  // console.log(cartItems);
 
-  const handleCartItemRemoval = async () => {
-    try {
-      const cartItemId = item._id;
-      console.log("Removing cart item with ID:", cartItemId);
-      await DeleteCartItem(cartItemId,dispatch)
-      
-    } catch (error) {
+  const handleCartItemRemoval=async()=>{
+    try{
+    const cartItemId = item._id;
+    // console.log(cartItemId);
+    await DeleteCartItem(cartItemId,dispatch);
+    } catch(error){
       console.error(error);
+
     }
-  };
+
+
+  }
 
   const handleItemDecrement = async () => {
     try {

@@ -16,7 +16,7 @@ const Headings = ({ title, category, label }) => {
         <Text style={styles.headerTitle}>{title}</Text>
         <TouchableOpacity onPress={()=>navigation.navigate("AllProducts",{category,label,title,isUpcoming}) }>
             <Ionicons
-            name="ios-grid"
+            name="grid"
             size={24}
             color={COLORS.primary}
             />
