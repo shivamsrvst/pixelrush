@@ -4,7 +4,7 @@ export const calculateTotalAmount = (cartData,discount) => {
 
     if (cartData) {
       totalAmount = cartData.reduce(
-        (accumulator, item) => accumulator + item.quantity * item.cartItem.price,
+        (accumulator, item) => accumulator + item.quantity * item.price,
         0
       );
 

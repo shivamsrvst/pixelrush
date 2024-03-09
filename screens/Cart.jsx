@@ -23,18 +23,22 @@ const Cart = ({ navigation }) => {
     checkUser();
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      refetch();
-      console.log("refetch called");
-    }
-  }, [cartItems]);
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     refetch();
+  //     console.log("refetch called");
+  //   }
+  // }, [cartItems]);
+
+  useEffect(()=>{
+
+  },[cartItems]);
 
   
 
   const applyCouponCode = (code) => {
     if (code === "GAME20") {
-      const discountAmount = calculateTotalAmount(data).totalAmount * 0.2;
+      const discountAmount = calculateTotalAmount(cartItems).totalAmount * 0.2;
       setDiscount(discountAmount);
       setIsCouponApplied(true);
     } else {
@@ -64,7 +68,7 @@ const Cart = ({ navigation }) => {
   const renderContent = () => {
     if (loader) {
       return <ActivityIndicator />;
-    } else if  (!data || data.length === 0) {
+    } else if  (!cartItems || cartItems.length === 0) {
       return (
         <>
         <View style={styles.titleRow}>
@@ -80,8 +84,8 @@ const Cart = ({ navigation }) => {
       return (
         <View>
           <FlatList
-            data={data}
-            keyExtractor={(item) => item._id}
+            data={cartItems}
+            keyExtractor={(item) => item.cartItemId}
             renderItem={({ item }) => <CartCard item={item} />}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
@@ -96,8 +100,8 @@ const Cart = ({ navigation }) => {
             }
             ListFooterComponent={
               <>
-                <CouponCodeSection cartData={data} applyCouponCode={applyCouponCode} clearCoupon={clearCoupon} isCouponApplied={isCouponApplied} />
-                <PricingSection cartData={data} discount={discount} isCouponApplied={isCouponApplied} />
+                <CouponCodeSection cartData={cartItems} applyCouponCode={applyCouponCode} clearCoupon={clearCoupon} isCouponApplied={isCouponApplied} />
+                <PricingSection cartData={cartItems} discount={discount} isCouponApplied={isCouponApplied} />
                 <Button
                   loader={false}
                   title="Checkout"

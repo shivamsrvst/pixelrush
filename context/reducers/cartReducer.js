@@ -7,10 +7,19 @@ const initialState = {
   const cartReducer = (state = initialState, action) => {
     switch (action.type) {
       case "ADD_TO_CART":
-        return {
-            ...state,
-            items: [...state.items, { ...action.payload, cartItemId: action.payload.cartItemId }], // Include cartItemId
-        };
+        const existingItemIndex = state.items.findIndex((item) => item.cartItemId === action.payload.cartItemId);
+        if (existingItemIndex !== -1) {
+            return {
+                ...state,
+                items: state.items.map((item, index) => index === existingItemIndex ? action.payload : item)
+            };
+        } else { 
+            return {
+                ...state,
+                items: [...state.items, action.payload], 
+            };
+        }
+      
   // Your reducer logic
   case 'DECREMENT_CART_ITEM':
     return {

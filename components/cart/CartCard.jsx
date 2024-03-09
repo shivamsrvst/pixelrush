@@ -18,11 +18,11 @@ const CartCard = ({ item, onPress, select }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart.items);
   // console.log(item);
-  console.log(cartItems);
+  // console.log(cartItems);
 
   const handleCartItemRemoval = async () => {
     try {
-      const cartItemId = item._id;
+      const cartItemId = item.cartItemId;
       console.log("Removing cart item with ID:", cartItemId);
       await DeleteCartItem(cartItemId,dispatch)
       
@@ -33,7 +33,7 @@ const CartCard = ({ item, onPress, select }) => {
 
   const handleItemDecrement = async () => {
     try {
-      const productId = item.cartItem._id;
+      const productId = item.productId;
       // console.log("This is the Carts id", productId);
   
       const userId = (await AsyncStorage.getItem("id"))?.replace(/"/g, "");
@@ -46,8 +46,8 @@ const CartCard = ({ item, onPress, select }) => {
       // Handle errors here
     }
   };
-  const reduxItem = cartItems.find(cartItem => cartItem.productId === item.cartItem._id);
-  // console.log(reduxItem);
+  const reduxItem = cartItems.find(cartItem => cartItem.cartItemId === item._id);
+  // console.log("selected",reduxItem);
   
   return (
     
@@ -57,20 +57,20 @@ const CartCard = ({ item, onPress, select }) => {
       >
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: item.cartItem.imageUrl }}
+            source={{ uri: item.imageUrl }}
             style={styles.image}
           />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.productTxt} numberOfLines={1}>
-            {item.cartItem.title}
+            {item.title}
           </Text>
           <Text style={styles.supplier} numberOfLines={1}>
-            {item.cartItem.supplier}
+            {item.supplier}
           </Text>
           <Text style={styles.priceQuantity}>
-            <Text style={styles.price}>${item.cartItem.price.toFixed(2)}</Text>{" "}
-            * {reduxItem?.quantity || item.quantity}
+            <Text style={styles.price}>${item.price.toFixed(2)}</Text>{" "}
+            * {item.quantity}
           </Text>
         </View>
         <TouchableOpacity

@@ -64,6 +64,8 @@ const SignUp = ({ navigation }) => {
     } catch (error) {
       console.log(error);
       
+    }finally{
+      setLoader(false);
     }
   
   

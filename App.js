@@ -1,10 +1,10 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback,forwardRef } from "react";
+import { useCallback, forwardRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BottomTabNavigation from "./navigation/BottomTabNavigation";
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   AllProducts,
   Cart,
@@ -16,7 +16,8 @@ import {
   SignUp,
 } from "./screens";
 import { Provider } from "react-redux";
-import store from "./context/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { store,persistor } from "./context/store";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,57 +41,56 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{flex:1}}>
-          <NavigationContainer>
-      <Provider store={store}>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Bottom Navigation"
-            component={BottomTabNavigation}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Cart"
-            component={Cart}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ProductDetails"
-            component={ProductDetails}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="AllProducts"
-            component={AllProducts}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginPage}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Favourites"
-            component={Favourites}
-            options={{ headerShown: false }}
-          />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Bottom Navigation"
+                component={BottomTabNavigation}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Cart"
+                component={Cart}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="ProductDetails"
+                component={ProductDetails}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="AllProducts"
+                component={AllProducts}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginPage}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Favourites"
+                component={Favourites}
+                options={{ headerShown: false }}
+              />
 
-          <Stack.Screen
-            name="Orders"
-            component={Orders}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={SignUp}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-
-      </Provider>
-    </NavigationContainer>
-
+              <Stack.Screen
+                name="Orders"
+                component={Orders}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Register"
+                component={SignUp}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
+          </PersistGate>
+        </Provider>
+      </NavigationContainer>
     </GestureHandlerRootView>
-
   );
 }
