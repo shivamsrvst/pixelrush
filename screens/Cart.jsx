@@ -3,12 +3,13 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import fetchCart from "../hook/fetchCart";
-import { Button, CartCard, CouponCodeSection, EmptyCart, PricingSection } from "../components";
+import { Button, CartCard, CouponCodeSection, EmptyCart, NotLoggedIn, PricingSection } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import { COLORS } from "../constants/theme";
 import styles from "./cart.style";
 import { calculateTotalAmount } from "../components/cart/cartUtils";
+import AppBar from "../components/cart/AppBar";
 
 const Cart = ({ navigation }) => {
   const { data, loader, error, refetch } = fetchCart();
@@ -16,12 +17,13 @@ const Cart = ({ navigation }) => {
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
-  console.log("Cart Items from Backend",data);
+  console.log("Cart Items from Backend:",data);
   console.log("Cart Items from Redux",cartItems);
 
   useEffect(() => {
     checkUser();
   }, []);
+
 
   // useEffect(() => {
   //   if (isLoggedIn) {
@@ -54,7 +56,7 @@ const Cart = ({ navigation }) => {
 
   const checkUser = async () => {
     try {
-      const id = await AsyncStorage.getItem("id");
+      const id = await AsyncStorage.getItem("id");   
       if (id !== null) {
         setIsLoggedIn(true);
       } else {
@@ -68,19 +70,23 @@ const Cart = ({ navigation }) => {
   const renderContent = () => {
     if (loader) {
       return <ActivityIndicator />;
-    } else if  (!cartItems || cartItems.length === 0) {
+    } 
+    else if(!isLoggedIn) {
       return (
-        <>
-        <View style={styles.titleRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back-circle" size={30} color={COLORS.primary} />
-        </TouchableOpacity>
-        <Text style={styles.titletxt}>Cart</Text>
-      </View>
-        <EmptyCart />
+      <>
+      <AppBar/>
+      <NotLoggedIn/>
         </>
       );
-    } else if (isLoggedIn) {
+    }
+    else if  (!cartItems || cartItems.length === 0) {
+      return (
+        <>
+        <AppBar/>
+        <EmptyCart/>
+        </>
+      );
+    } else {
       return (
         <View>
           <FlatList
@@ -89,14 +95,7 @@ const Cart = ({ navigation }) => {
             renderItem={({ item }) => <CartCard item={item} />}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
-              <>
-                <View style={styles.titleRow}>
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="chevron-back-circle" size={30} color={COLORS.primary} />
-                  </TouchableOpacity>
-                  <Text style={styles.titletxt}>Cart</Text>
-                </View>
-              </>
+             <AppBar/>
             }
             ListFooterComponent={
               <>
@@ -111,19 +110,6 @@ const Cart = ({ navigation }) => {
                 />
               </>
             }
-          />
-        </View>
-      );
-    } else {
-      return (
-        <View>
-          <Text>Please Log In to view your cart.</Text>
-          <Button
-            loader={false}
-            title="Log In"
-            onPress={() => {
-              navigation.navigate("Login");
-            }}
           />
         </View>
       );

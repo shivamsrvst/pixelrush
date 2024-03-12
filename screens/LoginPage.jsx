@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackBtn, Button } from "../components";
@@ -19,6 +19,9 @@ import { COLORS } from "../constants";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "../config";
+import fetchCart from "../hook/fetchCart";
+import { useDispatch } from "react-redux";
+import { Login } from "../context/actions/authActions";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -33,7 +36,7 @@ const LoginPage = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
   const [responseData, setResponseData] = useState(null);
   const [obsecureText, setObsecureText] = useState(true);
-
+  
   const invalidForm = () => {
     Alert.alert("Invalid Form", "Please Provide the credentials to login", [
       {
@@ -48,25 +51,22 @@ const LoginPage = ({ navigation }) => {
   };
 
   const login = async (values) => {
-    setLoader(true);
+    setLoader(true);    
     try {
       const endpoint = `${BACKEND_URL}/api/login/`;
-      const data = values;
-
       const response = await axios.post(endpoint, values);
+      
       if (response.status === 200) {
         setLoader(false);
         setResponseData(response.data);
-        // console.log(`user${responseData._id}`);
-        await AsyncStorage.setItem(`user${responseData._id}`,JSON.stringify(responseData))
-        await AsyncStorage.setItem("id",JSON.stringify(responseData._id))
-        await AsyncStorage.setItem("token",JSON.stringify(responseData.token))
-
+        await AsyncStorage.setItem(`user${response.data._id}`, JSON.stringify(response.data));
+        await AsyncStorage.setItem("id", JSON.stringify(response.data._id));
+        await AsyncStorage.setItem("token", JSON.stringify(response.data.token));
+        
         navigation.replace('Bottom Navigation');
 
-
-      } else {
-        Alert.alert("Login Error", "Please Provide the valid credentials", [
+      } else if (response.status === 401) {
+        Alert.alert("Login Error", response.data, [
           {
             text: "Cancel",
             onPress: () => {},
@@ -76,9 +76,20 @@ const LoginPage = ({ navigation }) => {
             onPress: () => {},
           },
         ]);
+      } else {
+        Alert.alert("Login Error", "An error occurred. Please try again later.", [
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
+          {
+            text: "Continue",
+            onPress: () => {},
+          },
+        ]);
       }
     } catch (error) {
-      Alert.alert("Login Error", "Error Logging in Please try again", [
+      Alert.alert("Login Error", "Error Logging in. Please try again later.", [
         {
           text: "Cancel",
           onPress: () => {},
@@ -94,6 +105,7 @@ const LoginPage = ({ navigation }) => {
   };
 
   return (
+    
     <ScrollView>
       <SafeAreaView style={{ marginHorizontal: 20 }}>
         <View>
@@ -103,7 +115,7 @@ const LoginPage = ({ navigation }) => {
             style={styles.cover}
           />
 
-          <Text style={styles.title}>Unlimited Flex Furniture</Text>
+          <Text style={styles.title}>Unlimited Games In Frames</Text>
 
           <Formik
             initialValues={{ email: "", password: "" }}

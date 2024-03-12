@@ -8,7 +8,8 @@ import OrderCard from "./OrderCard";
 import PricingSection from "./cart/PricingSection"
 import CouponCodeSection from "./cart/CouponCodeSection";
 import EmptyCart from "./cart/EmptyCart";
+import NotLoggedIn from "./cart/NotLoggedIn";
 
 export  {
-    Welcome,ProductList,SearchTile,BackBtn,Button,CartCard,OrderCard,PricingSection,CouponCodeSection,EmptyCart
+    Welcome,ProductList,SearchTile,BackBtn,Button,CartCard,OrderCard,PricingSection,CouponCodeSection,EmptyCart,NotLoggedIn
 };
