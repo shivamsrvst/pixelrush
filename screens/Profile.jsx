@@ -9,6 +9,8 @@ import { ScrollView } from "react-native-gesture-handler"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { resetCart } from "../context/actions/cartActions"
 import { useDispatch } from "react-redux"
+import { persistor } from "../context/store"
+
 
 const Profile = ({navigation}) => {
   const [userData, setUserData] = useState(null);

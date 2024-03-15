@@ -5,36 +5,50 @@ import { Ionicons } from "@expo/vector-icons";
 import fetchCart from "../hook/fetchCart";
 import { Button, CartCard, CouponCodeSection, EmptyCart, NotLoggedIn, PricingSection } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../constants/theme";
 import styles from "./cart.style";
 import { calculateTotalAmount } from "../components/cart/cartUtils";
 import AppBar from "../components/cart/AppBar";
+import { addToCart } from "../context/actions/cartActions";
 
 const Cart = ({ navigation }) => {
   const { data, loader, error, refetch } = fetchCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
+  const dispatch=useDispatch();
   console.log("Cart Items from Backend:",data);
-  console.log("Cart Items from Redux",cartItems);
 
+  const checkUser = async () => {
+    try {
+      const id = await AsyncStorage.getItem("id");   
+      if (id !== null) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.error("Error checking user:", error);
+    }
+  };
   useEffect(() => {
     checkUser();
   }, []);
 
 
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     refetch();
-  //     console.log("refetch called");
-  //   }
-  // }, [cartItems]);
+  useEffect(() => {
+      refetch();
+
+  }, [cartItems]);
 
   useEffect(()=>{
 
   },[cartItems]);
+
+  console.log("Cart Items from Redux:",cartItems);
 
   
 
@@ -54,21 +68,10 @@ const Cart = ({ navigation }) => {
     setIsCouponApplied(false);
   };
 
-  const checkUser = async () => {
-    try {
-      const id = await AsyncStorage.getItem("id");   
-      if (id !== null) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.error("Error checking user:", error);
-    }
-  };
+
 
   const renderContent = () => {
-    if (loader) {
+    if (loader || loadingData) {
       return <ActivityIndicator />;
     } 
     else if(!isLoggedIn) {

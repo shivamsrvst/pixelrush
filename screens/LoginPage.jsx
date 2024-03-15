@@ -19,9 +19,6 @@ import { COLORS } from "../constants";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "../config";
-import fetchCart from "../hook/fetchCart";
-import { useDispatch } from "react-redux";
-import { Login } from "../context/actions/authActions";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -62,6 +59,7 @@ const LoginPage = ({ navigation }) => {
         await AsyncStorage.setItem(`user${response.data._id}`, JSON.stringify(response.data));
         await AsyncStorage.setItem("id", JSON.stringify(response.data._id));
         await AsyncStorage.setItem("token", JSON.stringify(response.data.token));
+
         
         navigation.replace('Bottom Navigation');
 
@@ -115,7 +113,7 @@ const LoginPage = ({ navigation }) => {
             style={styles.cover}
           />
 
-          <Text style={styles.title}>Unlimited Games In Frames</Text>
+          <Text style={styles.title}>Unlimited Games Galore</Text>
 
           <Formik
             initialValues={{ email: "", password: "" }}

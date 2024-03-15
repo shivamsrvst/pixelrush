@@ -42,6 +42,12 @@ const initialState = {
         items: state.items.filter((item) => item.cartItemId !== action.payload), 
       };
     }  
+
+    case 'LOAD_CART_FROM_SERVER':
+      return {
+        ...state,
+        items: action.payload, // Replace with the batched data
+      };
   
     
       case "RESET_CART":
