@@ -44,24 +44,10 @@ const initialState = {
     }
 
     case 'LOAD_CART_FROM_SERVER':
-      // 1. Create a lookup for faster updates
-      const existingItemsMap = state.items.reduce((map, item) => {
-        map[item.cartItemId] = item;
-        return map;
-      }, {});
-    
-      // 2. Merge fetched data, updating or adding items as needed
-      const updatedItems = action.payload.map((fetchedItem) => {
-        return existingItemsMap[fetchedItem.cartItemId] 
-               ? { ...existingItemsMap[fetchedItem.cartItemId], ...fetchedItem } 
-               : fetchedItem; // Item is new, add as-is 
-      });
-    
       return {
         ...state,
-        items: updatedItems,
+        items: action.payload, // Replace with the batched data
       };
-    
   
     
       case "RESET_CART":
