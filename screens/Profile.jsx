@@ -50,6 +50,7 @@ const Profile = ({navigation}) => {
     try {
       await AsyncStorage.multiRemove([userId,'id']);
       dispatch(resetCart());
+      // await persistor.purge();
       navigation.replace('Bottom Navigation')
       
 

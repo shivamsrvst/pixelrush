@@ -43,6 +43,16 @@ const styles=StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+    toastContainer: {
+        position: 'absolute', 
+        bottom: 100, 
+        left: 20, 
+        right: 20, 
+        padding: 15,
+        borderRadius: 10,
+        // Make Background Transparent
+        backgroundColor: 'transparent', 
+      },  
 
 })
 

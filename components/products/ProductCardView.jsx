@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from "../../context/actions/cartActions"
 import AddToCart from "../../hook/AddToCart"
+import { showToast,hideToast,hideLoading,showLoading } from "../../context/actions/uiActions"
 
 
 const ProductCardView = ({item,isUpcoming}) => {
@@ -41,9 +42,15 @@ const ProductCardView = ({item,isUpcoming}) => {
       // Check if the item is already in the cart
       const isInCart = cartItems.some((cartItem) => cartItem.productId === item._id);
       if (!isInCart) {
+        dispatch(showLoading());
         await AddToCart(item._id, 1,dispatch);
+        dispatch(hideLoading()); // Dispatch action to hide loading indicator 
         // Show a success toast message
+        dispatch(showToast('Item added to cart'))
         // You can also update the UI to change the icon here
+        setTimeout(() => {
+          dispatch(hideToast()); // Dispatch action to hide toast after a delay
+        }, 3000);
         
       } else {
         // Item is already in the cart
@@ -52,6 +59,7 @@ const ProductCardView = ({item,isUpcoming}) => {
     } catch (error) {
       console.error('Error adding to cart:', error.message);
       // Show an error toast message
+      dispatch(hideLoading());
 
     }
   };

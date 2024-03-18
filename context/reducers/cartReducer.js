@@ -39,15 +39,29 @@ const initialState = {
     case "DELETE_CART_ITEM": {
       return {
         ...state,
-        items: state.items.filter((item) => item.cartItemId !== action.payload), 
+        items: state.items.filter((item) => item.cartItemId !== action.payload),
       };
-    }  
+    }
 
     case 'LOAD_CART_FROM_SERVER':
+      // 1. Create a lookup for faster updates
+      const existingItemsMap = state.items.reduce((map, item) => {
+        map[item.cartItemId] = item;
+        return map;
+      }, {});
+    
+      // 2. Merge fetched data, updating or adding items as needed
+      const updatedItems = action.payload.map((fetchedItem) => {
+        return existingItemsMap[fetchedItem.cartItemId] 
+               ? { ...existingItemsMap[fetchedItem.cartItemId], ...fetchedItem } 
+               : fetchedItem; // Item is new, add as-is 
+      });
+    
       return {
         ...state,
-        items: action.payload, // Replace with the batched data
+        items: updatedItems,
       };
+    
   
     
       case "RESET_CART":

@@ -26,6 +26,10 @@ const Home = () => {
   const { products, loading, error } = useSelector((state) => state.products);
   const { data, loader, refetch } = fetchCart();
   const cartItems = useSelector((state) => state.cart.items);
+  
+  const cartQuantity = cartItems.length;
+  const isItemAddLoading=useSelector((state) => state.ui.isLoading);
+  const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -48,7 +52,7 @@ const Home = () => {
       } else {
         setUserData(null);
         setUserLogin(false);
-        await dispatch(resetCart());
+        dispatch(resetCart());
       }
     } catch (error) {
       console.log("Error retrieving the data", error);
@@ -80,17 +84,17 @@ const Home = () => {
           quantity: item.quantity,
           title: item.cartItem.title,
         }));
-        console.log("This Fetch Cart Is Getting Executed ......");
+        console.log("This Fetch Cart Is Getting Executed ......(HomeScreen)");
 
         dispatch(loadCartFromServer(formattedData));
         setInitialFetchDone(true); // Prevent re-fetching on reloads
       } else {
-        console.log("Using cart data from Redux persist");
+        console.log("Using cart data from Redux persist(Home Screen)");
       }
     };
 
     checkAsync();
-  }, [data, userLogin, cartItems, initialFetchDone]);
+  }, [data,userLogin, initialFetchDone]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -102,12 +106,14 @@ const Home = () => {
           </Text>
 
           <View style={{ alignItems: "flex-end" }}>
-            <View style={styles.cartCount}>
-              <Text style={styles.cartNumber}>8</Text>
-            </View>
+            {cartQuantity > 0 && (
+              <View style={styles.cartCount}>
+                <Text style={styles.cartNumber}>{cartQuantity}</Text>
+              </View>
+            )}
 
             <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-              <Fontisto name="shopping-bag" size={24} />
+              <Ionicons name="cart-outline" size={28} />
             </TouchableOpacity>
           </View>
         </View>

@@ -8,15 +8,17 @@ import { persistStore, persistReducer,  FLUSH,
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import productsReducer from "./reducers/productsReducer";
 import cartReducer from "./reducers/cartReducer";
+import uiReducer from "./reducers/uiReducer";
 
 const rootReducer = combineReducers({
   products: productsReducer,
   cart: cartReducer,
+  ui: uiReducer,
 });
 
 const persistConfig = {
   key: 'root',  
-  storage: AsyncStorage, 
+  storage: AsyncStorage,
   whitelist: ['cart',] 
 };
 

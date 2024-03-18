@@ -10,7 +10,7 @@ import { COLORS } from "../constants/theme";
 import styles from "./cart.style";
 import { calculateTotalAmount } from "../components/cart/cartUtils";
 import AppBar from "../components/cart/AppBar";
-import { addToCart } from "../context/actions/cartActions";
+import { addToCart, resetCart } from "../context/actions/cartActions";
 
 const Cart = ({ navigation }) => {
   const { data, loader, error, refetch } = fetchCart();
@@ -20,7 +20,8 @@ const Cart = ({ navigation }) => {
   const [loadingData, setLoadingData] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch=useDispatch();
-  console.log("Cart Items from Backend:",data);
+  console.log("Cart Items from Backend:(CartScreen):",data);
+  console.log("Cart Items from Redux(CartScreen):",cartItems);
 
   const checkUser = async () => {
     try {
@@ -48,8 +49,8 @@ const Cart = ({ navigation }) => {
 
   },[cartItems]);
 
-  console.log("Cart Items from Redux:",cartItems);
 
+  console.log("Is User Currently Logged in:",isLoggedIn);
   
 
   const applyCouponCode = (code) => {
