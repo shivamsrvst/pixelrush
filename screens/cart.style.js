@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   supplier: {
-    fontSize: SIZES.small + 2,
+    fontSize: SIZES.xSmall,
     fontFamily: "regular",
     color: COLORS.gray,
     marginTop: 3,
@@ -71,9 +71,48 @@ const styles = StyleSheet.create({
   totalText: {
     fontWeight: "bold",
   },
+  itemLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9999, // Ensure it's above other components
+},
 
+toastContainer: {
+    position: 'absolute', 
+    bottom: 150, 
+    left: 20, 
+    right: 20, 
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: 'transparent', 
+  },  
 
-  // ... your other styles ...
+  swipeActions:{
+    justifyContent:'center',
+    alignItems:'center',
+    width:100
+  },
+  quantityCounter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
+    borderRadius: SIZES.xSmall,
+    padding:4,
+    backgroundColor:COLORS.secondary,
+    // marginBottom:46
+  },
+  quantityCount: {
+    marginHorizontal: SIZES.small / 2, // Add some space between icons and the count
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+  },
 
 
 

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   Linking,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import styles from "./productDetails.style";
@@ -22,6 +23,8 @@ import AddToCart from "../hook/AddToCart";
 import WebView from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import { showLoading,showToast,hideLoading,hideToast } from "../context/actions/uiActions";
+import Toast from "react-native-root-toast";
 
 const ProductDetails = ({ navigation, }) => {
   const [count, setCount] = useState(1);
@@ -30,6 +33,8 @@ const ProductDetails = ({ navigation, }) => {
   const [paymentUrl, setPaymentUrl] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const isItemAddLoading = useSelector((state) => state.ui.isLoading);
+  const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   const route = useRoute();
   const { item, isUpcoming} = route.params;
@@ -116,9 +121,15 @@ const ProductDetails = ({ navigation, }) => {
 
       // If not in cart, add to cart
       if (!isInCart) {
+        dispatch(showLoading());
         await AddToCart(item._id, count, dispatch);
+        dispatch(hideLoading()); // Dispatch action to hide loading indicator 
         // Show a success toast message
+        dispatch(showToast('Item added to cart'))
         // You can also update the UI to change the icon here
+        setTimeout(() => {
+          dispatch(hideToast()); // Dispatch action to hide toast after a delay
+        }, 3000);
       } else {
         // Item is already in the cart
         console.log("Item is already in the cart");
@@ -126,6 +137,9 @@ const ProductDetails = ({ navigation, }) => {
     } catch (error) {
       console.error("Error adding to cart:", error.message);
       // Show an error toast message
+      dispatch(showToast('Error adding to cart'))
+      dispatch(hideLoading());
+
     }
   };
   const handleBuy = () => {
@@ -253,14 +267,14 @@ const ProductDetails = ({ navigation, }) => {
                 </Text>
               ) : (
                 <View style={styles.rating}>
-                  <Pressable onPress={() => increment()}>
+                  <TouchableOpacity onPress={() => increment()}>
                     <SimpleLineIcons name="plus" size={20} />
-                  </Pressable>
+                  </TouchableOpacity>
                   <Text style={styles.ratingText}>{count}</Text>
 
-                  <Pressable onPress={() => decrement()}>
+                  <TouchableOpacity onPress={() => decrement()}>
                     <SimpleLineIcons name="minus" size={20} />
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
@@ -360,6 +374,25 @@ const ProductDetails = ({ navigation, }) => {
             )}
           </View>
         </View>
+      )}
+            {isItemAddLoading && (
+        <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
+          <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
+        </View>
+      )}
+
+      {toastMessage && (
+        <View style={styles.toastContainer}>
+          <Toast
+            visible={toastMessage !== null}
+            // position={Toast.positions.BOTTOM}
+            shadow={false}
+            animation={true}
+            hideOnPress={true}
+          >
+            {toastMessage}
+          </Toast>
+         </View>
       )}
     </View>
   );

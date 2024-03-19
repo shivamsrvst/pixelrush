@@ -123,7 +123,28 @@ const styles=StyleSheet.create({
         borderRadius:SIZES.large,
         marginHorizontal:12
 
-    }
+    },
+    itemLoadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999, // Ensure it's above other components
+    },
+    
+    toastContainer: {
+        position: 'absolute', 
+        bottom: 150, 
+        left: 20, 
+        right: 20, 
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: 'transparent', 
+      },  
 
 
 })

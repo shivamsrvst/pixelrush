@@ -15,6 +15,7 @@ import { fetchProducts } from "../context/actions/productsActions";
 import { COLORS, SIZES } from "../constants";
 import fetchCart from "../hook/fetchCart";
 import { loadCartFromServer, resetCart } from "../context/actions/cartActions";
+import Toast from "react-native-root-toast";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -26,9 +27,9 @@ const Home = () => {
   const { products, loading, error } = useSelector((state) => state.products);
   const { data, loader, refetch } = fetchCart();
   const cartItems = useSelector((state) => state.cart.items);
-  
+
   const cartQuantity = cartItems.length;
-  const isItemAddLoading=useSelector((state) => state.ui.isLoading);
+  const isItemAddLoading = useSelector((state) => state.ui.isLoading);
   const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   useEffect(() => {
@@ -94,7 +95,7 @@ const Home = () => {
     };
 
     checkAsync();
-  }, [data,userLogin, initialFetchDone]);
+  }, [data, userLogin, initialFetchDone]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -118,6 +119,25 @@ const Home = () => {
           </View>
         </View>
       </View>
+      {isItemAddLoading && (
+        <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
+          <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
+        </View>
+      )}
+
+      {toastMessage && (
+        <View style={styles.toastContainer}>
+          <Toast
+            visible={toastMessage !== null}
+            // position={Toast.positions.BOTTOM}
+            shadow={false}
+            animation={true}
+            hideOnPress={true}
+          >
+            {toastMessage}
+          </Toast>
+         </View>
+      )}
 
       {loading ? (
         <View style={[styles.loadingContainer, { flex: 1 }]}>
@@ -126,7 +146,9 @@ const Home = () => {
       ) : error ? (
         <Text>Something Went Wrong {error.message}</Text>
       ) : (
-        <ScrollView>
+        <ScrollView
+        showsVerticalScrollIndicator={false}
+        >
           <Welcome />
           <Carousel />
           {sections.map((section, index) => (

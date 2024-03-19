@@ -6,11 +6,12 @@ import fetchCart from "../hook/fetchCart";
 import { Button, CartCard, CouponCodeSection, EmptyCart, NotLoggedIn, PricingSection } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { COLORS } from "../constants/theme";
+import { COLORS, SIZES } from "../constants/theme";
 import styles from "./cart.style";
 import { calculateTotalAmount } from "../components/cart/cartUtils";
 import AppBar from "../components/cart/AppBar";
 import { addToCart, resetCart } from "../context/actions/cartActions";
+import Toast from "react-native-root-toast";
 
 const Cart = ({ navigation }) => {
   const { data, loader, error, refetch } = fetchCart();
@@ -22,6 +23,7 @@ const Cart = ({ navigation }) => {
   const dispatch=useDispatch();
   console.log("Cart Items from Backend:(CartScreen):",data);
   console.log("Cart Items from Redux(CartScreen):",cartItems);
+  const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   const checkUser = async () => {
     try {
@@ -115,6 +117,20 @@ const Cart = ({ navigation }) => {
               </>
             }
           />
+      {toastMessage && (
+        <View style={styles.toastContainer}>
+          <Toast
+            visible={toastMessage !== null}
+            // position={Toast.positions.BOTTOM}
+            shadow={false}
+            animation={true}
+            hideOnPress={true}
+          >
+            {toastMessage}
+          </Toast>
+         </View>
+      )}
+
         </View>
       );
     }

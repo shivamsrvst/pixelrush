@@ -8,6 +8,11 @@ export const loadCartFromServer = (cartData) => ({
   payload: cartData,
 });
 
+export const incrementCartItem = (productId) => ({
+  type: "INCREMENT_CART_ITEM",
+  payload: productId,
+});
+
 export const decrementCartItem = (productId) => ({
   type: "DECREMENT_CART_ITEM",
   payload: productId,
