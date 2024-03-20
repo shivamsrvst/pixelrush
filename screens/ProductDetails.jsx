@@ -65,7 +65,7 @@ const ProductDetails = ({ navigation, }) => {
   const createCheckout = async () => {
     const id = await AsyncStorage.getItem("id");
     const response = await fetch(
-      "https://stripe-server-production-531f.up.railway.app/stripe/create-checkout-session",
+      "https://pixelrushstripeserver-production.up.railway.app/stripe/create-checkout-session",
       {
         method: "POST",
         headers: {
