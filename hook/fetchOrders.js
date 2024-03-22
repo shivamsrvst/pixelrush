@@ -11,8 +11,9 @@ const fetchOrders = () => {
   const fetchData = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
+      const userId= await AsyncStorage.getItem("id");
 
-      const endpoint = `${BACKEND_URL}/api/orders`;
+      const endpoint = `${BACKEND_URL}/api/orders/${userId}`;
 
       const headers = {
         'Content-Type': 'application/json',

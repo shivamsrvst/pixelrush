@@ -23,22 +23,27 @@ import AddToCart from "../hook/AddToCart";
 import WebView from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { showLoading,showToast,hideLoading,hideToast } from "../context/actions/uiActions";
+import {
+  showLoading,
+  showToast,
+  hideLoading,
+  hideToast,
+} from "../context/actions/uiActions";
 import Toast from "react-native-root-toast";
 
-const ProductDetails = ({ navigation, }) => {
+const ProductDetails = ({ navigation }) => {
   const [count, setCount] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [favorites, setFavorites] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState(false);
+  const [paymentUrlLoading, setPaymentUrlLoading] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   const isItemAddLoading = useSelector((state) => state.ui.isLoading);
   const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   const route = useRoute();
-  const { item, isUpcoming} = route.params;
-
+  const { item, isUpcoming } = route.params;
 
   const increment = () => {
     setCount(count + 1);
@@ -63,9 +68,11 @@ const ProductDetails = ({ navigation, }) => {
   };
 
   const createCheckout = async () => {
+    console.log("Entered The createCheckout Function");
+    setPaymentUrlLoading(true);
     const id = await AsyncStorage.getItem("id");
     const response = await fetch(
-      "https://pixelrushstripeserver-production.up.railway.app/stripe/create-checkout-session",
+      "https://pixelrush-stripe-server.up.railway.app/stripe/create-checkout-session",
       {
         method: "POST",
         headers: {
@@ -86,11 +93,11 @@ const ProductDetails = ({ navigation, }) => {
     );
     const { url } = await response.json();
     setPaymentUrl(url);
+    setPaymentUrlLoading(false);
   };
 
   const onNavigationStateChange = (webViewState) => {
     const { url } = webViewState;
-
     if (url && url.includes("checkout-success")) {
       navigation.navigate("Orders");
     } else if (url && url.includes("cancel")) {
@@ -123,9 +130,9 @@ const ProductDetails = ({ navigation, }) => {
       if (!isInCart) {
         dispatch(showLoading());
         await AddToCart(item._id, count, dispatch);
-        dispatch(hideLoading()); // Dispatch action to hide loading indicator 
+        dispatch(hideLoading()); // Dispatch action to hide loading indicator
         // Show a success toast message
-        dispatch(showToast('Item added to cart'))
+        dispatch(showToast("Item added to cart"));
         // You can also update the UI to change the icon here
         setTimeout(() => {
           dispatch(hideToast()); // Dispatch action to hide toast after a delay
@@ -137,9 +144,8 @@ const ProductDetails = ({ navigation, }) => {
     } catch (error) {
       console.error("Error adding to cart:", error.message);
       // Show an error toast message
-      dispatch(showToast('Error adding to cart'))
+      dispatch(showToast("Error adding to cart"));
       dispatch(hideLoading());
-
     }
   };
   const handleBuy = () => {
@@ -201,6 +207,11 @@ const ProductDetails = ({ navigation, }) => {
 
   return (
     <View style={styles.container}>
+      {paymentUrlLoading && (
+        <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
+          <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
+        </View>
+      )}
       {paymentUrl ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
           <WebView
@@ -214,7 +225,6 @@ const ProductDetails = ({ navigation, }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Ionicons name="chevron-back-circle" size={30} />
             </TouchableOpacity>
-            
 
             {!item.labels.includes("Upcoming") && (
               <TouchableOpacity onPress={() => handlePress()}>
@@ -353,7 +363,7 @@ const ProductDetails = ({ navigation, }) => {
                         color: COLORS.lightWhite,
                         marginLeft: SIZES.small,
                       }}
-                      onPress={()=>navigation.navigate('Cart')}
+                      onPress={() => navigation.navigate("Cart")}
                     >
                       GO TO CART
                     </Text>
@@ -375,7 +385,7 @@ const ProductDetails = ({ navigation, }) => {
           </View>
         </View>
       )}
-            {isItemAddLoading && (
+      {isItemAddLoading && (
         <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
           <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
         </View>
@@ -392,7 +402,7 @@ const ProductDetails = ({ navigation, }) => {
           >
             {toastMessage}
           </Toast>
-         </View>
+        </View>
       )}
     </View>
   );

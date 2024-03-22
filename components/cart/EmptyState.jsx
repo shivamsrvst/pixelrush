@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SIZES, COLORS } from '../../constants';
 
-const EmptyCart = () => {
+const EmptyState = ({title}) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Oops..!! Your Cart Is Empty</Text>
+      <Text style={styles.text}>{title}</Text>
     </View>
   );
 };
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EmptyCart;
+export default EmptyState;

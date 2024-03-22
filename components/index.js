@@ -7,9 +7,10 @@ import CartCard from "./cart/CartCard";
 import OrderCard from "./OrderCard";
 import PricingSection from "./cart/PricingSection"
 import CouponCodeSection from "./cart/CouponCodeSection";
-import EmptyCart from "./cart/EmptyCart";
+import EmptyState from "./cart/EmptyState";
 import NotLoggedIn from "./cart/NotLoggedIn";
+import ProductCard from "./products/ProductCard";
 
 export  {
-    Welcome,ProductList,SearchTile,BackBtn,Button,CartCard,OrderCard,PricingSection,CouponCodeSection,EmptyCart,NotLoggedIn
+    Welcome,ProductList,SearchTile,BackBtn,Button,CartCard,OrderCard,PricingSection,CouponCodeSection,EmptyState,NotLoggedIn,ProductCard
 };

@@ -5,14 +5,14 @@ import React from 'react'
 import { COLORS, SIZES } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 
-const AppBar = () => {
+const AppBar = ({title}) => {
   const navigation=useNavigation();
   return (
     <View style={styles.titleRow}>
     <TouchableOpacity onPress={() => navigation.goBack()}>
       <Ionicons name="chevron-back-circle" size={30} color={COLORS.primary} />
     </TouchableOpacity>
-    <Text style={styles.titletxt}>Cart</Text>
+    <Text style={styles.titletxt}>{title}</Text>
   </View>
   )
 }

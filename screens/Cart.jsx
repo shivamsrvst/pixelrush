@@ -3,7 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import fetchCart from "../hook/fetchCart";
-import { Button, CartCard, CouponCodeSection, EmptyCart, NotLoggedIn, PricingSection } from "../components";
+import { Button, CartCard, CouponCodeSection, EmptyState, NotLoggedIn, PricingSection } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS, SIZES } from "../constants/theme";
@@ -12,6 +12,7 @@ import { calculateTotalAmount } from "../components/cart/cartUtils";
 import AppBar from "../components/cart/AppBar";
 import { addToCart, resetCart } from "../context/actions/cartActions";
 import Toast from "react-native-root-toast";
+import WebView from "react-native-webview";
 
 const Cart = ({ navigation }) => {
   const { data, loader, error, refetch } = fetchCart();
@@ -71,8 +72,6 @@ const Cart = ({ navigation }) => {
     setIsCouponApplied(false);
   };
 
-
-
   const renderContent = () => {
     if (loader || loadingData) {
       return <ActivityIndicator />;
@@ -88,11 +87,11 @@ const Cart = ({ navigation }) => {
     else if  (!cartItems || cartItems.length === 0) {
       return (
         <>
-        <AppBar/>
-        <EmptyCart/>
+        <AppBar title="Cart"/>
+        <EmptyState title="Oops..!! Your Cart Is Empty"/>
         </>
       );
-    } else {
+    }else {
       return (
         <View>
           <FlatList
@@ -101,7 +100,7 @@ const Cart = ({ navigation }) => {
             renderItem={({ item }) => <CartCard item={item} />}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
-             <AppBar/>
+             <AppBar title="Cart"/>
             }
             ListFooterComponent={
               <>
@@ -109,10 +108,8 @@ const Cart = ({ navigation }) => {
                 <PricingSection cartData={cartItems} discount={discount} isCouponApplied={isCouponApplied} />
                 <Button
                   loader={false}
-                  title="Checkout"
-                  onPress={() => {
-                    navigation.navigate("Login");
-                  }}
+                  title="Proceed To Checkout"
+                  onPress={() => navigation.navigate("Checkout", { cartItems, discount })}
                 />
               </>
             }

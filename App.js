@@ -14,6 +14,7 @@ import {
   Orders,
   ProductDetails,
   SignUp,
+  Checkout
 } from "./screens";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -85,6 +86,11 @@ export default function App() {
               <Stack.Screen
                 name="Register"
                 component={SignUp}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Checkout"
+                component={Checkout}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
