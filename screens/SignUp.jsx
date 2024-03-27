@@ -29,8 +29,8 @@ const validationSchema = Yup.object().shape({
   location: Yup.string()
     .min(3, "Provide a valid location")
     .required("Required"),
-    username: Yup.string()
-    .min(4,"Provide a valid username")
+  username: Yup.string()
+    .min(4, "Provide a valid username")
     .required("Required"),
 });
 
@@ -50,26 +50,21 @@ const SignUp = ({ navigation }) => {
       },
     ]);
   };
-  const registerUser=async(values)=>{
+  const registerUser = async (values) => {
     setLoader(true);
     try {
-      const endpoint=`${BACKEND_URL}/api/register/`
-      const data=values;
-      const response=await axios.post(endpoint,data);
-      if (response.status===201) {
-        navigation.replace('Login')
-        
+      const endpoint = `${BACKEND_URL}/api/register/`;
+      const data = values;
+      const response = await axios.post(endpoint, data);
+      if (response.status === 201) {
+        navigation.replace("Login");
       }
-      
     } catch (error) {
       console.log(error);
-      
-    }finally{
+    } finally {
       setLoader(false);
     }
-  
-  
-  }
+  };
 
   return (
     <ScrollView>
@@ -79,17 +74,22 @@ const SignUp = ({ navigation }) => {
           <Image
             source={require("../assets/images/bk.png")}
             style={{
-                height:SIZES.height/4.4,
-                width:SIZES.width-60,
-                resizeMode:"contain",
-                marginBottom:SIZES.xxLarge
+              height: SIZES.height / 4.4,
+              width: SIZES.width - 60,
+              resizeMode: "contain",
+              marginBottom: SIZES.xxLarge,
             }}
           />
 
           <Text style={styles.title}>Unlimited Flex Furniture</Text>
 
           <Formik
-            initialValues={{ email: "", password: "", location: "",username:"" }}
+            initialValues={{
+              email: "",
+              password: "",
+              location: "",
+              username: "",
+            }}
             validationSchema={validationSchema}
             onSubmit={(values) => registerUser(values)}
           >
@@ -108,7 +108,7 @@ const SignUp = ({ navigation }) => {
                   <Text style={styles.label}>Username</Text>
                   <View
                     style={styles.inputWrapper(
-                      touched.username? COLORS.primary : COLORS.offwhite
+                      touched.username ? COLORS.primary : COLORS.offwhite
                     )}
                   >
                     <MaterialCommunityIcons
@@ -252,7 +252,6 @@ const SignUp = ({ navigation }) => {
                   isValid={isValid}
                   loader={loader}
                 />
-
               </View>
             )}
           </Formik>

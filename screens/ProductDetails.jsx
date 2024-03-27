@@ -7,6 +7,7 @@ import {
   Alert,
   Linking,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import styles from "./productDetails.style";
@@ -33,23 +34,37 @@ import Toast from "react-native-root-toast";
 import { BACKEND_URL } from "../config";
 import { useStripe } from "@stripe/stripe-react-native";
 import makeOrder from "../hook/makeOrder";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 const ProductDetails = ({ navigation }) => {
   const [count, setCount] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [favorites, setFavorites] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState(false);
-  const [paymentUrlLoading, setPaymentUrlLoading] = useState(false);
+  const [orderSuccessModalVisible, setOrderSuccessModalVisible] =
+    useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   const isItemAddLoading = useSelector((state) => state.ui.isLoading);
   const toastMessage = useSelector((state) => state.ui.toastMessage);
-  const{initPaymentSheet,presentPaymentSheet}=useStripe();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const route = useRoute();
   const { item, isUpcoming } = route.params;
-  console.log("Item's Structure:",item);
+  console.log("Item's Structure:", item);
+
+  const showOrderSuccessModal = () => {
+    setOrderSuccessModalVisible(true);
+  };
+
+  const hideOrderSuccessModal = () => {
+    setOrderSuccessModalVisible(false);
+  };
+
+  const navigateToHome = () => {
+    hideOrderSuccessModal(); // Close modal before navigating
+    navigation.navigate("Home");
+  };
 
   const increment = () => {
     setCount(count + 1);
@@ -62,7 +77,6 @@ const ProductDetails = ({ navigation }) => {
     checkFavorites();
   }, []);
 
-
   const checkExistingUser = async () => {
     const id = await AsyncStorage.getItem("id");
     const userId = `user${JSON.parse(id)}`;
@@ -73,7 +87,7 @@ const ProductDetails = ({ navigation }) => {
         const parsedData = JSON.parse(currentUser);
         setIsLoggedIn(true);
         setUserData(parsedData);
-        console.log("Current User's Data:",parsedData)
+        console.log("Current User's Data:", parsedData);
       } else {
         console.log("User Not Logged In.....");
         setUserData(null);
@@ -87,87 +101,94 @@ const ProductDetails = ({ navigation }) => {
     console.log("Entered The createCheckout Function");
     const id = await AsyncStorage.getItem("id");
     const token = await AsyncStorage.getItem("token");
-    const email=userData.email;
-    const total=(item.price *count)+5;
+    const email = userData.email;
+    const total = item.price * count + 5;
     const DUMMY_ADDRESS = {
-      line1: '123 Fake Street',
-      city: 'Dummy City',
-      postal_code: '98140',
-      state: 'DA',
-      country: 'US',
+      line1: "123 Fake Street",
+      city: "Dummy City",
+      postal_code: "98140",
+      state: "DA",
+      country: "US",
     };
-    const response = await fetch(
-      `${BACKEND_URL}/api/payments/intents`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount:Math.floor(total*100),
-          description:item.description,
-          customerAddress:DUMMY_ADDRESS,
-          customerEmail:email
-        }),
-      }
-    );
-    if(response.error){
+    const response = await fetch(`${BACKEND_URL}/api/payments/intents`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: Math.floor(total * 100),
+        description: item.description,
+        customerAddress: DUMMY_ADDRESS,
+        customerEmail: email,
+      }),
+    });
+    if (response.error) {
       Alert.alert("Something Went Wrong");
       return;
     }
     const responseJson = await response.json();
     console.log(responseJson.paymentIntent);
 
-    const initResponse=initPaymentSheet({
-      merchantDisplayName:'Pixelrush Ventures',
-      paymentIntentClientSecret:responseJson.paymentIntent
-    })
+    const initResponse = initPaymentSheet({
+      merchantDisplayName: "Pixelrush Ventures",
+      paymentIntentClientSecret: responseJson.paymentIntent,
+    });
 
-    if((await initResponse).error){
+    if ((await initResponse).error) {
       console.log(await initResponse.error);
       Alert.alert("Something Went Wrong....");
       return;
     }
 
-    const paymentResponse=await presentPaymentSheet();
+    const paymentResponse = await presentPaymentSheet();
 
     if (paymentResponse.error) {
       console.log("Payment UnsucessFull");
       console.log(paymentResponse.error);
-      Alert.alert(`Error code: ${paymentResponse.error.code}`, paymentResponse.error.message);
+      Alert.alert(
+        `Error code: ${paymentResponse.error.code}`,
+        paymentResponse.error.message
+      );
       return;
-    }else{
-        // Payment successful!
-    console.log("Payment Successful");
+    } else {
+      // Payment successful!
+      console.log("Payment Successful");
+      dispatch(showLoading());
 
-        // Logic for placing order (pay on delivery)
-        const formattedProduct = [{
+      // Logic for placing order (pay on delivery)
+      const formattedProduct = [
+        {
           productId: item._id,
           quantity: count,
           price: item.price,
           imageUrl: item.imageUrl,
-          title:item.title
-        }];
-        const generateOrderId = () => {
-          const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
-          return random.toString(); // Convert the random number to string
-        };
-    const orderData = {
-          orderId: generateOrderId(), // You need to implement this function
-          userId: userData ? userData._id : null,
-          products: formattedProduct,
-          subtotal: item.price,
-          total: total,
-          paymentStatus: 'Paid online',
-          deliveryStatus: 'Pending'
-        };
-    
-        console.log("Order Data to be Sent To DataBase:",orderData);
-        await makeOrder(orderData);
-        navigation.navigate("Home")
-      }
+          title: item.title,
+        },
+      ];
+      const generateOrderId = () => {
+        const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
+        return random.toString(); // Convert the random number to string
+      };
+      const orderData = {
+        orderId: generateOrderId(), // You need to implement this function
+        userId: userData ? userData._id : null,
+        products: formattedProduct,
+        subtotal: item.price,
+        total: total,
+        paymentStatus: "Paid Online",
+        deliveryStatus: "Pending",
+      };
+
+      console.log("Order Data to be Sent To DataBase:", orderData);
+      await makeOrder(orderData);
+      dispatch(hideLoading());
+      showOrderSuccessModal();
+
+      // Delay and navigate to Home
+      setTimeout(navigateToHome, 4000);
+    }
   };
-  
+
   const handlePress = () => {
     if (isLoggedIn === false) {
       navigation.navigate("Login");
@@ -270,17 +291,26 @@ const ProductDetails = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {paymentUrlLoading && (
+      {isItemAddLoading && (
         <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
           <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
         </View>
       )}
-      {paymentUrl ? (
+      {orderSuccessModalVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-          <WebView
-            source={{ uri: paymentUrl }}
-            onNavigationStateChange={onNavigationStateChange}
-          />
+          <Modal
+            visible={orderSuccessModalVisible}
+            transparent={false}
+            animationType="slide"
+            onRequestClose={hideOrderSuccessModal}
+          >
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>
+                Yayy..!Order Placed Successfully!
+              </Text>
+              <ConfettiCannon count={200} origin={{ x: -10, y: 0 }} />
+            </View>
+          </Modal>
         </SafeAreaView>
       ) : (
         <View style={styles.container}>
@@ -448,12 +478,6 @@ const ProductDetails = ({ navigation }) => {
           </View>
         </View>
       )}
-      {isItemAddLoading && (
-        <View style={[styles.itemLoadingContainer, { flex: 1 }]}>
-          <ActivityIndicator size={SIZES.xxLarge} color={COLORS.tertiary} />
-        </View>
-      )}
-
       {toastMessage && (
         <View style={styles.toastContainer}>
           <Toast

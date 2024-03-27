@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, SHADOWS, SIZES } from '../constants';
+import { StyleSheet } from "react-native";
+import { COLORS, SHADOWS, SIZES } from "../constants";
 
 const styles = StyleSheet.create({
   container: {
@@ -11,41 +11,40 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cardDelivery: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 5,
     borderRadius: 8,
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    marginTop:10,
-    paddingBottom:2
+    marginTop: 10,
+    paddingBottom: 2,
   },
   cardTitleDelivery: {
-    fontSize: SIZES.medium+2,
-    fontWeight: 'bold',
+    fontSize: SIZES.medium + 2,
+    fontWeight: "bold",
     marginBottom: 10,
-    textAlign:'center',
-    color:COLORS.primary
+    textAlign: "center",
+    color: COLORS.primary,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 8,
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    marginTop:10
+    marginTop: 10,
   },
   cardTitle: {
-    fontSize: SIZES.medium+2,
-    fontWeight: 'bold',
+    fontSize: SIZES.medium + 2,
+    fontWeight: "bold",
     marginBottom: 10,
-    color:COLORS.primary
-
+    color: COLORS.primary,
   },
   paymentOption: {
     borderWidth: 1,
@@ -64,42 +63,77 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 12,
     padding: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   paymentButtonText: {
     color: COLORS.lightWhite,
-    fontSize: SIZES.medium+2,
-    fontWeight:'bold'
+    fontSize: SIZES.medium + 2,
+    fontWeight: "bold",
   },
   paymentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
-    backgroundColor:'#fff',
-    borderRadius:8,
-    padding:5,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 5,
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
   totalAmountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding:4
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 4,
   },
   totalAmountLabel: {
     fontSize: SIZES.medium,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 10,
-    color:COLORS.black
+    color: COLORS.black,
   },
   totalAmount: {
-    fontSize: SIZES.medium+4,
-    fontWeight: 'bold',
-    color:COLORS.black
+    fontSize: SIZES.medium + 4,
+    fontWeight: "bold",
+    color: COLORS.black,
   },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLORS.primary, // Semi-transparent background
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalCard: {
+    backgroundColor: "#fff", // Background color of the card
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5, // Elevation for Android shadow
+    shadowColor: "#000", // Shadow color for iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+    color:COLORS.white
+  },
+  itemLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9999, // Ensure it's above other components
+},
 });
 
 export default styles;

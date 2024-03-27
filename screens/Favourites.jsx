@@ -77,21 +77,18 @@ const Favourites = ({ navigation }) => {
             <View style={styles.imageContainer}>
               <Image source={{ uri: item.imageUrl }} style={styles.image} />
             </View>
-            
+
             <View style={styles.textContainer}>
               <Text style={styles.favText}>{item.title}</Text>
               <Text style={styles.supplier}>{item.supplier}</Text>
               <Text style={styles.price}>$ {item.price}</Text>
-              
             </View>
             <TouchableOpacity
-            onPress={()=>{deleteFavorites(item.id)}}
+              onPress={() => {
+                deleteFavorites(item.id);
+              }}
             >
-              <SimpleLineIcons 
-              name="trash"
-              size={24}
-              color={COLORS.red}
-              />
+              <SimpleLineIcons name="trash" size={24} color={COLORS.red} />
             </TouchableOpacity>
           </View>
         )}

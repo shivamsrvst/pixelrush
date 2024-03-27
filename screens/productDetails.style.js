@@ -145,6 +145,29 @@ const styles=StyleSheet.create({
         borderRadius: 10,
         backgroundColor: 'transparent', 
       },  
+      modalContainer: {
+        flex: 1,
+        backgroundColor: COLORS.primary, // Semi-transparent background
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      modalCard: {
+        backgroundColor: "#fff", // Background color of the card
+        borderRadius: 10,
+        padding: 20,
+        elevation: 5, // Elevation for Android shadow
+        shadowColor: "#000", // Shadow color for iOS shadow
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      modalText: {
+        fontSize: 22,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 20,
+        color:COLORS.white
+      },  
 
 
 })

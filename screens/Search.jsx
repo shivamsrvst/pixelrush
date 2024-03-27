@@ -1,7 +1,7 @@
 // Search.jsx
 
-import { View, Text, TextInput, Image, FlatList } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./search.style";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -31,7 +31,9 @@ const Search = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/products/search/${searchKey}`);
+      const response = await axios.get(
+        `${BACKEND_URL}/api/products/search/${searchKey}`
+      );
       setSearchResults(response.data);
     } catch (error) {
       console.log("Failed to get Products", error);
@@ -56,7 +58,7 @@ const Search = () => {
       {searchResults.length === 0 ? (
         <View style={{ flex: 1 }}>
           <Image
-            source={require('../assets/images/Pose23.png')}
+            source={require("../assets/images/Pose23.png")}
             style={styles.searchImage}
           />
         </View>

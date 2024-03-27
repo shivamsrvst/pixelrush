@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState,useRef } from "react";
+import React, { useState, useRef } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../constants/theme";
 import styles from "../../screens/cart.style";
@@ -16,7 +16,7 @@ import DecrementCartItem from "../../hook/DecrementCartItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteCartItem from "../../hook/DeleteCartItem";
-import IncrementCartItem from "../../hook/IncrementCartItem"
+import IncrementCartItem from "../../hook/IncrementCartItem";
 import {
   showLoading,
   showToast,
@@ -37,12 +37,12 @@ const CartCard = ({ item, onPress, select }) => {
 
   const getDeliveryMessage = (title) => {
     const firstLetter = title.charAt(0).toUpperCase(); // Get the first letter and capitalize it
-    if (firstLetter >= 'A' && firstLetter <= 'I') {
-        return "Delivery in 2 Days";
-    } else if (firstLetter >= 'J' && firstLetter <= 'R') {
-        return "Delivery in 3 Days";
+    if (firstLetter >= "A" && firstLetter <= "I") {
+      return "Delivery in 2 Days";
+    } else if (firstLetter >= "J" && firstLetter <= "R") {
+      return "Delivery in 3 Days";
     } else {
-        return "Delivery in 5 Days";
+      return "Delivery in 5 Days";
     }
   };
 
@@ -104,12 +104,12 @@ const CartCard = ({ item, onPress, select }) => {
     );
   };
   const swipeFromRightOpen = () => {
-    Alert.alert(
-      "Remove Item",
-      "Are you sure you want to remove this item?", [
+    Alert.alert("Remove Item", "Are you sure you want to remove this item?", [
       {
         text: "Cancel",
-        onPress: () => {swipeableRef.current.close()},
+        onPress: () => {
+          swipeableRef.current.close();
+        },
         style: "cancel",
       },
       {
@@ -138,20 +138,22 @@ const CartCard = ({ item, onPress, select }) => {
             {item.title}
           </Text>
           <Text style={styles.priceQuantity}>
-            <Text style={styles.price}>${(item.quantity * item.price).toFixed(2)}</Text>
+            <Text style={styles.price}>
+              ${(item.quantity * item.price).toFixed(2)}
+            </Text>
           </Text>
           <Text style={styles.supplier} numberOfLines={1}>
-          {getDeliveryMessage(item.title)}
+            {getDeliveryMessage(item.title)}
           </Text>
         </View>
         <View style={styles.quantityCounter}>
-              <TouchableOpacity onPress={handleItemDecrement} >
-                <AntDesign name="minus" size={18} color={COLORS.primary} />
-              </TouchableOpacity>
-              <Text style={styles.quantityCount}>{item.quantity}</Text> 
-              <TouchableOpacity onPress={handleItemIncrement}>
-                <AntDesign name="plus" size={18} color={COLORS.primary} />
-              </TouchableOpacity>
+          <TouchableOpacity onPress={handleItemDecrement}>
+            <AntDesign name="minus" size={18} color={COLORS.primary} />
+          </TouchableOpacity>
+          <Text style={styles.quantityCount}>{item.quantity}</Text>
+          <TouchableOpacity onPress={handleItemIncrement}>
+            <AntDesign name="plus" size={18} color={COLORS.primary} />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </Swipeable>

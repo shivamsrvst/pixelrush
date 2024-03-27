@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import fetchCart from "../hook/fetchCart";
-import { Button, CartCard, CouponCodeSection, EmptyState, NotLoggedIn, PricingSection } from "../components";
+import {
+  Button,
+  CartCard,
+  CouponCodeSection,
+  EmptyState,
+  NotLoggedIn,
+  PricingSection,
+} from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS, SIZES } from "../constants/theme";
@@ -21,14 +34,14 @@ const Cart = ({ navigation }) => {
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
-  const dispatch=useDispatch();
-  console.log("Cart Items from Backend:(CartScreen):",data);
-  console.log("Cart Items from Redux(CartScreen):",cartItems);
+  const dispatch = useDispatch();
+  console.log("Cart Items from Backend:(CartScreen):", data);
+  console.log("Cart Items from Redux(CartScreen):", cartItems);
   const toastMessage = useSelector((state) => state.ui.toastMessage);
 
   const checkUser = async () => {
     try {
-      const id = await AsyncStorage.getItem("id");   
+      const id = await AsyncStorage.getItem("id");
       if (id !== null) {
         setIsLoggedIn(true);
       } else {
@@ -42,19 +55,13 @@ const Cart = ({ navigation }) => {
     checkUser();
   }, []);
 
-
   useEffect(() => {
-      refetch();
-
+    refetch();
   }, [cartItems]);
 
-  useEffect(()=>{
+  useEffect(() => {}, [cartItems]);
 
-  },[cartItems]);
-
-
-  console.log("Is User Currently Logged in:",isLoggedIn);
-  
+  console.log("Is User Currently Logged in:", isLoggedIn);
 
   const applyCouponCode = (code) => {
     if (code === "GAME20") {
@@ -75,23 +82,21 @@ const Cart = ({ navigation }) => {
   const renderContent = () => {
     if (loader || loadingData) {
       return <ActivityIndicator />;
-    } 
-    else if(!isLoggedIn) {
-      return (
-      <>
-      <AppBar/>
-      <NotLoggedIn/>
-        </>
-      );
-    }
-    else if  (!cartItems || cartItems.length === 0) {
+    } else if (!isLoggedIn) {
       return (
         <>
-        <AppBar title="Cart"/>
-        <EmptyState title="Oops..!! Your Cart Is Empty"/>
+          <AppBar />
+          <NotLoggedIn />
         </>
       );
-    }else {
+    } else if (!cartItems || cartItems.length === 0) {
+      return (
+        <>
+          <AppBar title="Cart" />
+          <EmptyState title="Oops..!! Your Cart Is Empty" />
+        </>
+      );
+    } else {
       return (
         <View>
           <FlatList
@@ -99,44 +104,50 @@ const Cart = ({ navigation }) => {
             keyExtractor={(item) => item.cartItemId}
             renderItem={({ item }) => <CartCard item={item} />}
             showsVerticalScrollIndicator={false}
-            ListHeaderComponent={
-             <AppBar title="Cart"/>
-            }
+            ListHeaderComponent={<AppBar title="Cart" />}
             ListFooterComponent={
               <>
-                <CouponCodeSection cartData={cartItems} applyCouponCode={applyCouponCode} clearCoupon={clearCoupon} isCouponApplied={isCouponApplied} />
-                <PricingSection cartData={cartItems} discount={discount} isCouponApplied={isCouponApplied} />
+                <CouponCodeSection
+                  cartData={cartItems}
+                  applyCouponCode={applyCouponCode}
+                  clearCoupon={clearCoupon}
+                  isCouponApplied={isCouponApplied}
+                />
+                <PricingSection
+                  cartData={cartItems}
+                  discount={discount}
+                  isCouponApplied={isCouponApplied}
+                />
                 <Button
                   loader={false}
                   title="Proceed To Checkout"
-                  onPress={() => navigation.navigate("Checkout", { cartItems, discount })}
+                  onPress={() =>
+                    navigation.navigate("Checkout", { cartItems, discount })
+                  }
                 />
               </>
             }
           />
-      {toastMessage && (
-        <View style={styles.toastContainer}>
-          <Toast
-            visible={toastMessage !== null}
-            // position={Toast.positions.BOTTOM}
-            shadow={false}
-            animation={true}
-            hideOnPress={true}
-          >
-            {toastMessage}
-          </Toast>
-         </View>
-      )}
-
+          {toastMessage && (
+            <View style={styles.toastContainer}>
+              <Toast
+                visible={toastMessage !== null}
+                // position={Toast.positions.BOTTOM}
+                shadow={false}
+                animation={true}
+                hideOnPress={true}
+              >
+                {toastMessage}
+              </Toast>
+            </View>
+          )}
         </View>
       );
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {renderContent()}
-    </SafeAreaView>
+    <SafeAreaView style={styles.container}>{renderContent()}</SafeAreaView>
   );
 };
 

@@ -31,7 +31,18 @@ const styles=StyleSheet.create({
         color:COLORS.lightWhite,
         marginLeft:5,
         
-    }
+    },
+    itemLoadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999, // Ensure it's above other components
+    },
 
 
 })
