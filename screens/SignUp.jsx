@@ -72,7 +72,7 @@ const SignUp = ({ navigation }) => {
         <View>
           <BackBtn onPress={() => navigation.goBack()} />
           <Image
-            source={require("../assets/images/bk.png")}
+            source={require("../assets/images/bggame.png")}
             style={{
               height: SIZES.height / 4.4,
               width: SIZES.width - 60,
@@ -81,7 +81,7 @@ const SignUp = ({ navigation }) => {
             }}
           />
 
-          <Text style={styles.title}>Unlimited Flex Furniture</Text>
+          <Text style={styles.title}>Unlimited Games Galore</Text>
 
           <Formik
             initialValues={{

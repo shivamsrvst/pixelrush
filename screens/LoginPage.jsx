@@ -109,7 +109,7 @@ const LoginPage = ({ navigation }) => {
         <View>
           <BackBtn onPress={() => navigation.goBack()} />
           <Image
-            source={require("../assets/images/bk.png")}
+            source={require("../assets/images/bggame.png")}
             style={styles.cover}
           />
 
