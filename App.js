@@ -14,11 +14,12 @@ import {
   Orders,
   ProductDetails,
   SignUp,
-  Checkout
+  Checkout,
 } from "./screens";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { store,persistor } from "./context/store";
+import { store, persistor } from "./context/store";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,60 +41,63 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+  const STRIPE_PUBLISHABLE_KEY='pk_test_51OyDNWSItb18AH2ttUSxbRVOLRYsIWM2jTIcc3d6vWlRBdyGalmx68XjPfVEEFcaePucnDjO1O8PeJoJv4MfbI1P00YqmbNT3I'
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            <Stack.Navigator>
-              <Stack.Screen
-                name="Bottom Navigation"
-                component={BottomTabNavigation}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Cart"
-                component={Cart}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ProductDetails"
-                component={ProductDetails}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AllProducts"
-                component={AllProducts}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Login"
-                component={LoginPage}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Favourites"
-                component={Favourites}
-                options={{ headerShown: false }}
-              />
+            <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
+              <Stack.Navigator>
+                <Stack.Screen
+                  name="Bottom Navigation"
+                  component={BottomTabNavigation}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Cart"
+                  component={Cart}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ProductDetails"
+                  component={ProductDetails}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="AllProducts"
+                  component={AllProducts}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={LoginPage}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Favourites"
+                  component={Favourites}
+                  options={{ headerShown: false }}
+                />
 
-              <Stack.Screen
-                name="Orders"
-                component={Orders}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Register"
-                component={SignUp}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Checkout"
-                component={Checkout}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
+                <Stack.Screen
+                  name="Orders"
+                  component={Orders}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Register"
+                  component={SignUp}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Checkout"
+                  component={Checkout}
+                  options={{ headerShown: false }}
+                />
+              </Stack.Navigator>
+            </StripeProvider>
           </PersistGate>
         </Provider>
       </NavigationContainer>

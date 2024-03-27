@@ -12,6 +12,9 @@ import { useSelector,useDispatch } from "react-redux";
 import makeOrder from "../hook/makeOrder";
 import deleteCart from "../hook/deleteCart";
 import { resetCart } from "../context/actions/cartActions";
+import { useStripe } from "@stripe/stripe-react-native";
+import { BACKEND_URL } from "../config";
+
 
 const Checkout = () => {
   const route=useRoute();
@@ -19,9 +22,12 @@ const Checkout = () => {
   const navigation=useNavigation();
   const [paymentMethod, setPaymentMethod] = useState('payOnDelivery');
   const [userData, setUserData] = useState(null);
+  const [paymentUrl, setPaymentUrl] = useState(false);
+  const [paymentUrlLoading, setPaymentUrlLoading] = useState(false);
   const cartItems = useSelector((state) => state.cart.items);
   const {discount}=route.params;
   const pricingDetails = calculateTotalAmount(cartItems, discount);
+  const{initPaymentSheet,presentPaymentSheet}=useStripe();
   console.log("Total Amount to Pay:",pricingDetails.finalTotal.toFixed(2));
   console.log("Items Coming From Cart To Checkout",cartItems);
 
@@ -44,6 +50,7 @@ const Checkout = () => {
       );
     }
   };
+  
   const checkExistingUser = async () => {
     console.log("inside the check user function");
     const id = await AsyncStorage.getItem("id");
@@ -61,15 +68,17 @@ const Checkout = () => {
       console.log("Error retrieving the data", error);
     }
   };
+
   useEffect(()=>{
     checkExistingUser()
   },[])
+
   const generateOrderId = () => {
     const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
     return random.toString(); // Convert the random number to string
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (paymentMethod) => {
     // Logic for placing order (pay on delivery)
     const orderData = {
       orderId: generateOrderId(), // You need to implement this function
@@ -84,7 +93,7 @@ const Checkout = () => {
       })),
       subtotal: pricingDetails.totalAmount,
       total: pricingDetails.finalTotal.toFixed(0),
-      paymentStatus: 'pending',
+      paymentStatus: paymentMethod === 'payOnline' ? 'Paid Online' : 'pending',
       deliveryStatus: 'pending'
     };
 
@@ -95,10 +104,72 @@ const Checkout = () => {
     navigation.navigate("Home")
     
   };
-
-  const handlePayOnline = () => {
-    // Logic for online payment
+  const generatePaymentDescription = (cartItems) => {
+    const titles = cartItems.map(item => item.title); // Extract titles from cart items
+    const description = "Payment Initiated for " + titles.join(", "); // Concatenate titles with commas
+    return description;
   };
+
+  const handlePayOnline = async() => {
+    console.log("Entered The createCheckout Function");
+    const id = await AsyncStorage.getItem("id");
+    const token = await AsyncStorage.getItem("token");
+    const email=userData.email;
+    const DUMMY_ADDRESS = {
+      line1: '123 Fake Street',
+      city: 'Dummy City',
+      postal_code: '98140',
+      state: 'DA',
+      country: 'US',
+    };
+    const description = generatePaymentDescription(cartItems);
+    const response = await fetch(
+      `${BACKEND_URL}/api/payments/intents`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount:pricingDetails.finalTotal.toFixed(0)*100,
+          description:description,
+          customerAddress:DUMMY_ADDRESS,
+          customerEmail:email
+        }),
+      }
+    );
+    if(response.error){
+      Alert.alert("Something Went Wrong");
+      return;
+    }
+    const responseJson = await response.json();
+    console.log(responseJson.paymentIntent);
+
+    const initResponse=initPaymentSheet({
+      merchantDisplayName:'Pixelrush Ventures',
+      paymentIntentClientSecret:responseJson.paymentIntent
+    })
+
+    if((await initResponse).error){
+      console.log(await initResponse.error);
+      Alert.alert("Something Went Wrong....");
+      return;
+    }
+
+    const paymentResponse=await presentPaymentSheet();
+
+    if (paymentResponse.error) {
+      console.log("Payment UnsucessFull");
+      console.log(paymentResponse.error);
+      Alert.alert(`Error code: ${paymentResponse.error.code}`, paymentResponse.error.message);
+      return;
+    }else{
+        // Payment successful!
+    console.log("Payment Successful");
+    await handlePlaceOrder('payOnline');
+    }
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>

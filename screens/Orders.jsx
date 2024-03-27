@@ -21,6 +21,7 @@ const Orders = () => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => <OrderCard order={item} />}
           contentContainerStyle={{ padding: SIZES.padding }}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </SafeAreaView>

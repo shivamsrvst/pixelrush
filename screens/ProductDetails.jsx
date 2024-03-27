@@ -30,10 +30,14 @@ import {
   hideToast,
 } from "../context/actions/uiActions";
 import Toast from "react-native-root-toast";
+import { BACKEND_URL } from "../config";
+import { useStripe } from "@stripe/stripe-react-native";
+import makeOrder from "../hook/makeOrder";
 
 const ProductDetails = ({ navigation }) => {
   const [count, setCount] = useState(1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [favorites, setFavorites] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState(false);
   const [paymentUrlLoading, setPaymentUrlLoading] = useState(false);
@@ -41,9 +45,11 @@ const ProductDetails = ({ navigation }) => {
   const cartItems = useSelector((state) => state.cart.items);
   const isItemAddLoading = useSelector((state) => state.ui.isLoading);
   const toastMessage = useSelector((state) => state.ui.toastMessage);
+  const{initPaymentSheet,presentPaymentSheet}=useStripe();
 
   const route = useRoute();
   const { item, isUpcoming } = route.params;
+  console.log("Item's Structure:",item);
 
   const increment = () => {
     setCount(count + 1);
@@ -52,59 +58,116 @@ const ProductDetails = ({ navigation }) => {
     if (count > 1) setCount(count - 1);
   };
   useEffect(() => {
-    checkUser();
+    checkExistingUser();
     checkFavorites();
   }, []);
 
-  const checkUser = async () => {
+
+  const checkExistingUser = async () => {
+    const id = await AsyncStorage.getItem("id");
+    const userId = `user${JSON.parse(id)}`;
     try {
-      const id = await AsyncStorage.getItem("id");
+      const currentUser = await AsyncStorage.getItem(userId);
+
       if (id !== null) {
+        const parsedData = JSON.parse(currentUser);
         setIsLoggedIn(true);
+        setUserData(parsedData);
+        console.log("Current User's Data:",parsedData)
       } else {
-        console.log("User not logged in");
+        console.log("User Not Logged In.....");
+        setUserData(null);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error retrieving the data", error);
+    }
   };
 
   const createCheckout = async () => {
     console.log("Entered The createCheckout Function");
-    setPaymentUrlLoading(true);
     const id = await AsyncStorage.getItem("id");
+    const token = await AsyncStorage.getItem("token");
+    const email=userData.email;
+    const total=(item.price *count)+5;
+    const DUMMY_ADDRESS = {
+      line1: '123 Fake Street',
+      city: 'Dummy City',
+      postal_code: '98140',
+      state: 'DA',
+      country: 'US',
+    };
     const response = await fetch(
-      "https://pixelrush-stripe-server.up.railway.app/stripe/create-checkout-session",
+      `${BACKEND_URL}/api/payments/intents`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: JSON.parse(id),
-          cartItems: [
-            {
-              name: item.title,
-              id: item._id,
-              price: item.price,
-              cartQuantity: count,
-            },
-          ],
+          amount:Math.floor(total*100),
+          description:item.description,
+          customerAddress:DUMMY_ADDRESS,
+          customerEmail:email
         }),
       }
     );
-    const { url } = await response.json();
-    setPaymentUrl(url);
-    setPaymentUrlLoading(false);
-  };
-
-  const onNavigationStateChange = (webViewState) => {
-    const { url } = webViewState;
-    if (url && url.includes("checkout-success")) {
-      navigation.navigate("Orders");
-    } else if (url && url.includes("cancel")) {
-      navigation.goBack();
+    if(response.error){
+      Alert.alert("Something Went Wrong");
+      return;
     }
-  };
+    const responseJson = await response.json();
+    console.log(responseJson.paymentIntent);
 
+    const initResponse=initPaymentSheet({
+      merchantDisplayName:'Pixelrush Ventures',
+      paymentIntentClientSecret:responseJson.paymentIntent
+    })
+
+    if((await initResponse).error){
+      console.log(await initResponse.error);
+      Alert.alert("Something Went Wrong....");
+      return;
+    }
+
+    const paymentResponse=await presentPaymentSheet();
+
+    if (paymentResponse.error) {
+      console.log("Payment UnsucessFull");
+      console.log(paymentResponse.error);
+      Alert.alert(`Error code: ${paymentResponse.error.code}`, paymentResponse.error.message);
+      return;
+    }else{
+        // Payment successful!
+    console.log("Payment Successful");
+
+        // Logic for placing order (pay on delivery)
+        const formattedProduct = [{
+          productId: item._id,
+          quantity: count,
+          price: item.price,
+          imageUrl: item.imageUrl,
+          title:item.title
+        }];
+        const generateOrderId = () => {
+          const random = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
+          return random.toString(); // Convert the random number to string
+        };
+    const orderData = {
+          orderId: generateOrderId(), // You need to implement this function
+          userId: userData ? userData._id : null,
+          products: formattedProduct,
+          subtotal: item.price,
+          total: total,
+          paymentStatus: 'Paid online',
+          deliveryStatus: 'Pending'
+        };
+    
+        console.log("Order Data to be Sent To DataBase:",orderData);
+        await makeOrder(orderData);
+        navigation.navigate("Home")
+      }
+  };
+  
   const handlePress = () => {
     if (isLoggedIn === false) {
       navigation.navigate("Login");
