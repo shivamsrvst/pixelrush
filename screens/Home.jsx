@@ -16,6 +16,7 @@ import { COLORS, SIZES } from "../constants";
 import fetchCart from "../hook/fetchCart";
 import { loadCartFromServer, resetCart } from "../context/actions/cartActions";
 import Toast from "react-native-root-toast";
+import { StatusBar } from 'react-native';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -99,6 +100,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar backgroundColor="transparent" barStyle="dark-content" translucent={true} />
       <View style={styles.appBarWrapper}>
         <View style={styles.appBar}>
           <Ionicons name="location-outline" size={24} />

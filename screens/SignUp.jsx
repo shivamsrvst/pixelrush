@@ -60,11 +60,20 @@ const SignUp = ({ navigation }) => {
         navigation.replace("Login");
       }
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 409) {
+        Alert.alert(
+          "User Already Exists",
+          "A user with this email already exists. Please use a different email or log in.",
+          [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+        );
+      } else {
+        console.log(error);
+      }
     } finally {
       setLoader(false);
     }
   };
+  
 
   return (
     <ScrollView>

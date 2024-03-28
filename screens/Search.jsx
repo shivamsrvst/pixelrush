@@ -1,6 +1,6 @@
 // Search.jsx
 
-import { View, Text, TextInput, Image, FlatList } from "react-native";
+import { View, Text, TextInput, Image, FlatList, KeyboardAvoidingView, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./search.style";
@@ -9,6 +9,7 @@ import { COLORS, SIZES } from "../constants";
 import axios from "axios";
 import { SearchTile } from "../components";
 import { BACKEND_URL } from "../config";
+
 
 const Search = () => {
   const [searchKey, setSearchKey] = useState("");
@@ -63,11 +64,12 @@ const Search = () => {
           />
         </View>
       ) : (
-        <FlatList
-          data={searchResults}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => <SearchTile item={item} />}
-        />
+          <FlatList
+            data={searchResults}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => <SearchTile item={item} />}
+            showsVerticalScrollIndicator={false}
+          />
       )}
     </SafeAreaView>
   );

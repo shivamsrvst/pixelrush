@@ -125,7 +125,6 @@ const Profile = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="transparent" translucent={true} />
       <View style={styles.container}>
         <View style={{ width: "100%", marginTop: -StatusBar.currentHeight }}>
           <Image

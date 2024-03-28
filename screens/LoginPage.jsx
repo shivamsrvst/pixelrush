@@ -59,21 +59,8 @@ const LoginPage = ({ navigation }) => {
         await AsyncStorage.setItem(`user${response.data._id}`, JSON.stringify(response.data));
         await AsyncStorage.setItem("id", JSON.stringify(response.data._id));
         await AsyncStorage.setItem("token", JSON.stringify(response.data.token));
-
         
         navigation.replace('Bottom Navigation');
-
-      } else if (response.status === 401) {
-        Alert.alert("Login Error", response.data, [
-          {
-            text: "Cancel",
-            onPress: () => {},
-          },
-          {
-            text: "Try Again",
-            onPress: () => {},
-          },
-        ]);
       } else {
         Alert.alert("Login Error", "An error occurred. Please try again later.", [
           {
@@ -87,20 +74,35 @@ const LoginPage = ({ navigation }) => {
         ]);
       }
     } catch (error) {
-      Alert.alert("Login Error", "Error Logging in. Please try again later.", [
-        {
-          text: "Cancel",
-          onPress: () => {},
-        },
-        {
-          text: "Continue",
-          onPress: () => {},
-        },
-      ]);
+      if (error.response && error.response.status === 401) {
+        Alert.alert("Login Error", "Invalid email or password. Please try again.", [
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
+          {
+            text: "Continue",
+            onPress: () => {},
+          },
+        ]);
+      } else {
+        Alert.alert("Login Error", "Error Logging in. Please try again later.", [
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
+          {
+            text: "Continue",
+            onPress: () => {},
+          },
+        ]);
+      }
     } finally {
       setLoader(false);
     }
   };
+  
+  
 
   return (
     
