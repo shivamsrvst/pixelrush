@@ -15,11 +15,13 @@ import {
   ProductDetails,
   SignUp,
   Checkout,
+  ForgotPassword,
 } from "./screens";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./context/store";
 import { StripeProvider } from "@stripe/stripe-react-native";
+import ForgotSuccess from "./screens/ForgotSuccess";
 
 const Stack = createNativeStackNavigator();
 
@@ -94,6 +96,16 @@ export default function App() {
                 <Stack.Screen
                   name="Checkout"
                   component={Checkout}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ForgotPassword"
+                  component={ForgotPassword}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ForgotSuccess"
+                  component={ForgotSuccess}
                   options={{ headerShown: false }}
                 />
               </Stack.Navigator>

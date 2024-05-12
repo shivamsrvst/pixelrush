@@ -9,7 +9,8 @@ import Orders from "./Orders";
 import Favourites from "./Favourites";
 import SignUp from "./SignUp";
 import Checkout from "./Checkout";
+import ForgotPassword from "./ForgotPassword";
 
 export{
-    Home,Search,Profile,Cart,ProductDetails,AllProducts,LoginPage,Orders,Favourites,SignUp,Checkout
+    Home,Search,Profile,Cart,ProductDetails,AllProducts,LoginPage,Orders,Favourites,SignUp,Checkout,ForgotPassword
 }

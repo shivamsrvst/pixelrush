@@ -52,7 +52,7 @@ const LoginPage = ({ navigation }) => {
     try {
       const endpoint = `${BACKEND_URL}/api/login/`;
       const response = await axios.post(endpoint, values);
-      
+
       if (response.status === 200) {
         setLoader(false);
         setResponseData(response.data);
@@ -209,6 +209,15 @@ const LoginPage = ({ navigation }) => {
                     <Text style={styles.errorMessage}>{errors.password}</Text>
                   )}
                 </View>
+                <Text
+                  style={styles.forgotpassword}
+                  onPress={() => {
+                    navigation.navigate("ForgotPassword");
+                  }}
+                >
+                  Forgot Password?
+                </Text>
+                
 
                 <Button
                   loader={loader}

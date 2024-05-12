@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     backgroundColor: backgroundColor,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 40,
   }),
   btnText: {
     fontFamily: "bold",

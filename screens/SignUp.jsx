@@ -51,28 +51,54 @@ const SignUp = ({ navigation }) => {
     ]);
   };
   const registerUser = async (values) => {
-    setLoader(true);
+    setLoader(true); 
+  
     try {
       const endpoint = `${BACKEND_URL}/api/register/`;
       const data = values;
       const response = await axios.post(endpoint, data);
+  
       if (response.status === 201) {
+        // Successful registration
         navigation.replace("Login");
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
+      } else {
+        // Unsuccessful due to server-side issue 
         Alert.alert(
-          "User Already Exists",
-          "A user with this email already exists. Please use a different email or log in.",
+          "Registration Error", 
+          "An error occurred. Please try again later.", 
           [{ text: "OK", onPress: () => console.log("OK Pressed") }]
         );
+      }
+    } catch (error) {
+      if (error.response) {
+        // Specific errors returned from the backend
+        if (error.response.status === 409) {
+          Alert.alert(
+            "User Already Exists",
+            "A user with this email already exists. Please use a different email or log in.",
+            [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+          );
+        } else {
+          // Other server errors (500, etc.)
+          Alert.alert(
+            "Registration Error", 
+            "An error occurred. Please try again later.", 
+            [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+          );
+        }
       } else {
-        console.log(error);
+        // Likely a network error or client-side issue
+        Alert.alert(
+          "Registration Error", 
+          "Error registering. Check your network connection and try again.", 
+          [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+        );
       }
     } finally {
       setLoader(false);
     }
   };
+  
   
 
   return (

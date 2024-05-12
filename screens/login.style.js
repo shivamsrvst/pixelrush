@@ -18,7 +18,7 @@ const styles=StyleSheet.create({
         marginBottom:SIZES.xxLarge
     },
     wrapper:{
-        marginBottom:20,
+        marginBottom:15,
         // marginHorizontal:20
     },
     label:{
@@ -50,9 +50,13 @@ const styles=StyleSheet.create({
         fontSize:SIZES.xSmall
     },
     registration:{
-        marginTop:10,
+        marginTop:6,
         textAlign:"center"
-
+    },
+    forgotpassword:{
+        marginLeft:4,
+        fontSize:SIZES.medium-3,
+        fontWeight:"bold"
     }
 
 });
